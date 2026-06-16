@@ -1,0 +1,14 @@
+# Build output
+bin/
+obj/
+dist/
+
+# Generated preview artifacts
+icon-preview.png
+
+# IDE / OS
+.vs/
+*.user
+.idea/
+Thumbs.db
+desktop.ini
