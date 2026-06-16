@@ -65,9 +65,15 @@ logged-on user. Expand the **Credentials (optional)** panel to provide them:
   (including MFA) in the browser, so any account type is supported.
 
 ## Download
-Grab the latest self-contained `StaleDeviceManager.exe` from the
-[Releases](../../releases) page. No .NET runtime needed on the target machine -
-run it on a domain-joined host with internet access for the Entra/Intune sign-in.
+From the [Releases](../../releases) page (both are signed):
+
+- **`StaleDeviceManager-<version>.msi`** - installer. Installs to
+  `C:\Program Files\Stale Device Manager` and adds Start menu and desktop
+  shortcuts. Per-machine, so it prompts for elevation.
+- **`StaleDeviceManager.exe`** - portable, self-contained single file. Just run it.
+
+No .NET runtime is needed on the target machine. Run on a domain-joined host with
+internet access for the Entra/Intune sign-in.
 
 ## Building from source
 Requires the [.NET 9 SDK](https://dotnet.microsoft.com/download).

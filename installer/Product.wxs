@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <Package Name="Stale Device Manager"
+           Manufacturer="ThomasMarcussen.com"
+           Version="1.2.0"
+           UpgradeCode="611BB251-4406-4901-8263-21C5EABB6EC6"
+           Scope="perMachine"
+           Compressed="yes">
+
+    <SummaryInformation Description="Stale Device Manager - installer"
+                        Manufacturer="ThomasMarcussen.com" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <!-- Add/Remove Programs icon + link -->
+    <Icon Id="AppIcon.ico" SourceFile="icon.ico" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon.ico" />
+    <Property Id="ARPURLINFOABOUT" Value="https://thomasmarcussen.com" />
+
+    <!-- Install into Program Files\Stale Device Manager -->
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="Stale Device Manager" />
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder" />
+    <StandardDirectory Id="DesktopFolder" />
+
+    <Feature Id="Main" Title="Stale Device Manager" Level="1">
+      <ComponentGroupRef Id="AppComponents" />
+    </Feature>
+
+    <!-- Install wizard with folder selection + MIT license -->
+    <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
+    <WixVariable Id="WixUILicenseRtf" Value="installer\license.rtf" />
+  </Package>
+
+  <Fragment>
+    <ComponentGroup Id="AppComponents">
+      <Component Id="MainExe" Directory="INSTALLFOLDER">
+        <File Id="StaleDeviceManagerExe" Source="dist\StaleDeviceManager.exe" KeyPath="yes">
+          <!-- Start menu shortcut -->
+          <Shortcut Id="StartMenuShortcut"
+                    Directory="ProgramMenuFolder"
+                    Name="Stale Device Manager"
+                    Description="Find, disable, and delete stale device records"
+                    WorkingDirectory="INSTALLFOLDER"
+                    Icon="AppIcon.ico" />
+          <!-- Desktop shortcut -->
+          <Shortcut Id="DesktopShortcut"
+                    Directory="DesktopFolder"
+                    Name="Stale Device Manager"
+                    Description="Find, disable, and delete stale device records"
+                    WorkingDirectory="INSTALLFOLDER"
+                    Icon="AppIcon.ico" />
+        </File>
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

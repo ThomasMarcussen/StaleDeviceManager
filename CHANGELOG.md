@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     different domain). Blank = current Windows user.
   - Entra ID / Intune: a "Sign in as (UPN)" hint that pre-targets the admin
     account in the interactive browser sign-in (MFA completed in the browser).
+- **Signed MSI installer** (WiX). Installs per-machine to
+  `C:\Program Files\Stale Device Manager` with Start menu and desktop shortcuts,
+  an Add/Remove Programs entry, and major-upgrade support.
 
 ### Changed
 - The Entra/Intune sign-in no longer persists a token cache, so each connect is

@@ -3,6 +3,10 @@ bin/
 obj/
 dist/
 
+# Installer build artifacts
+*.msi
+*.wixpdb
+
 # Generated preview artifacts
 icon-preview.png
 
