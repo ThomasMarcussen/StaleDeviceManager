@@ -39,6 +39,12 @@ public class StaleDevice : INotifyPropertyChanged
     public string OperatingSystem { get; init; } = "";
 
     /// <summary>
+    /// OperatingSystem collapsed to an OS family (e.g. "Windows 10", "Windows 11",
+    /// "Windows Server 2019") for grouping/filtering regardless of edition or build.
+    /// </summary>
+    public string OsFamily => OsClassifier.Family(OperatingSystem);
+
+    /// <summary>
     /// Last/primary user where the platform exposes it: Intune userPrincipalName,
     /// Entra registered owner. Blank for AD (computer objects don't store this).
     /// </summary>
