@@ -105,20 +105,35 @@
             </Grid>
         </Border>
 
+        <!-- Filter / export bar -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
+            <TextBlock Text="Filter OS:" VerticalAlignment="Center" Margin="0,0,6,0"/>
+            <ComboBox x:Name="OsFilter" Width="240" SelectionChanged="OsFilter_SelectionChanged"/>
+            <Button x:Name="BtnExportCsv" Content="Export CSV" Width="110" Height="28" Margin="14,0,0,0" Click="BtnExportCsv_Click"/>
+            <Button x:Name="BtnOpenAudit" Content="Open audit log" Width="120" Height="28" Margin="8,0,0,0" Click="BtnOpenAudit_Click"/>
+            <TextBlock x:Name="FilterInfo" VerticalAlignment="Center" Margin="14,0,0,0" Foreground="#555"/>
+        </StackPanel>
+
         <!-- Results grid -->
         <DataGrid x:Name="Grid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="False"
                   GridLinesVisibility="Horizontal" HeadersVisibility="Column" SelectionMode="Extended"
                   AlternatingRowBackground="#F5F8FB">
             <DataGrid.Columns>
-                <DataGridCheckBoxColumn Header="✓" Binding="{Binding Selected, UpdateSourceTrigger=PropertyChanged}" Width="36"/>
+                <DataGridCheckBoxColumn Binding="{Binding Selected, UpdateSourceTrigger=PropertyChanged}" Width="40">
+                    <DataGridCheckBoxColumn.Header>
+                        <CheckBox x:Name="HeaderSelectAll" ToolTip="Select / clear all shown"
+                                  Checked="HeaderSelectAll_Changed" Unchecked="HeaderSelectAll_Changed"/>
+                    </DataGridCheckBoxColumn.Header>
+                </DataGridCheckBoxColumn>
                 <DataGridTextColumn Header="Source" Binding="{Binding SourceLabel}" Width="90" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200" IsReadOnly="True"/>
-                <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding Enabled}" Width="70" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Last activity" Binding="{Binding LastActivity, StringFormat=yyyy-MM-dd}" Width="100" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Pwd last set" Binding="{Binding PasswordLastSet, StringFormat=yyyy-MM-dd}" Width="100" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Created" Binding="{Binding WhenCreated, StringFormat=yyyy-MM-dd}" Width="100" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Reason" Binding="{Binding Reason}" Width="200" IsReadOnly="True"/>
-                <DataGridTextColumn Header="OS" Binding="{Binding OperatingSystem}" Width="140" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="180" IsReadOnly="True"/>
+                <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding Enabled}" Width="62" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Last user" Binding="{Binding LastUser}" Width="170" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Last activity" Binding="{Binding LastActivity, StringFormat=yyyy-MM-dd}" Width="95" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Pwd last set" Binding="{Binding PasswordLastSet, StringFormat=yyyy-MM-dd}" Width="95" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Created" Binding="{Binding WhenCreated, StringFormat=yyyy-MM-dd}" Width="90" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Reason" Binding="{Binding Reason}" Width="170" IsReadOnly="True"/>
+                <DataGridTextColumn Header="OS" Binding="{Binding OperatingSystem}" Width="130" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*" IsReadOnly="True"/>
             </DataGrid.Columns>
         </DataGrid>

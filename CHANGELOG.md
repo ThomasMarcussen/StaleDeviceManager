@@ -4,6 +4,22 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-06-16
+
+### Added
+- **OS filter** on the scanned grid - a dropdown of the operating systems present
+  in the results filters the view live.
+- **Last user** column, populated where the platform exposes it: Intune primary
+  user (`userPrincipalName`) and Entra registered owner. AD computer objects do
+  not store a last-logged-on user, so it stays blank there.
+- **Export to CSV** of the (filtered) scan results.
+- **Result export** offered after each Disable and Delete batch.
+- **Audit log** - append-only `audit.log` under
+  `%ProgramData%\Stale Device Manager\`, recording every scan, disable, and
+  delete with timestamp, operator, device, and result. An "Open audit log"
+  button opens it.
+- The column header tick now selects / clears all shown rows.
+
 ## [1.2.0] - 2026-06-16
 
 ### Added

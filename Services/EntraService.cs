@@ -73,6 +73,8 @@ public class EntraService
                 "id", "displayName", "accountEnabled", "approximateLastSignInDateTime",
                 "operatingSystem", "operatingSystemVersion", "deviceId", "registrationDateTime"
             };
+            // Registered owner = best available "primary user" for an Entra device.
+            rc.QueryParameters.Expand = new[] { "registeredOwners($select=userPrincipalName,displayName)" };
         });
 
         if (page?.Value != null)
@@ -97,12 +99,15 @@ public class EntraService
             if (excludeServers && isServer) continue;
             if (!(lastStale && oldEnough)) continue;
 
+            var owner = d.RegisteredOwners?.OfType<User>().FirstOrDefault();
+
             results.Add(new StaleDevice
             {
                 Source = DeviceSource.Entra,
                 Id = d.Id ?? "",
                 Name = d.DisplayName ?? "(no name)",
                 OperatingSystem = $"{d.OperatingSystem} {d.OperatingSystemVersion}".Trim(),
+                LastUser = owner?.UserPrincipalName ?? owner?.DisplayName ?? "",
                 LastActivity = last?.UtcDateTime,
                 PasswordLastSet = null,
                 WhenCreated = created?.UtcDateTime,
@@ -161,7 +166,8 @@ public class EntraService
             rc.QueryParameters.Select = new[]
             {
                 "id", "deviceName", "lastSyncDateTime", "operatingSystem",
-                "osVersion", "enrolledDateTime", "managedDeviceOwnerType", "complianceState"
+                "osVersion", "enrolledDateTime", "managedDeviceOwnerType", "complianceState",
+                "userPrincipalName", "userDisplayName"
             };
         });
 
@@ -193,6 +199,7 @@ public class EntraService
                 Id = d.Id ?? "",
                 Name = d.DeviceName ?? "(no name)",
                 OperatingSystem = $"{d.OperatingSystem} {d.OsVersion}".Trim(),
+                LastUser = d.UserPrincipalName ?? d.UserDisplayName ?? "",
                 LastActivity = last?.UtcDateTime,
                 PasswordLastSet = null,
                 WhenCreated = enrolled?.UtcDateTime,

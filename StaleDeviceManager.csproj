@@ -10,7 +10,7 @@
     <AssemblyName>StaleDeviceManager</AssemblyName>
     <RootNamespace>StaleDeviceManager</RootNamespace>
     <ApplicationIcon>icon.ico</ApplicationIcon>
-    <Version>1.2.0</Version>
+    <Version>1.3.0</Version>
     <Company>ThomasMarcussen.com</Company>
     <Product>Stale Device Manager</Product>
     <Authors>Thomas Marcussen</Authors>

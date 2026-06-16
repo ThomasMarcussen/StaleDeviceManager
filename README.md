@@ -40,6 +40,17 @@ threshold - devices with unknown creation/enrolment dates are never flagged.
 > The Disable action skips Intune rows (with a note in the log); use **Delete** to
 > remove a stale managed-device record.
 
+## Filtering, export and auditing
+- **Filter** the scanned grid by operating system with the OS dropdown.
+- The column header tick selects/clears all shown rows.
+- **Last user** is shown where the platform exposes it: Intune primary user and
+  Entra registered owner. AD computer objects do not record a last-logged-on user.
+- **Export CSV** writes the current (filtered) view to a file.
+- After each **Disable** or **Delete** batch you are offered a CSV of the results.
+- Every scan, disable and delete is written to an append-only **audit log** at
+  `%ProgramData%\Stale Device Manager\audit.log` (timestamp, operator, device,
+  result). Use the **Open audit log** button to view it.
+
 ## Authentication
 - **AD**: uses the current Windows account of whoever runs the tool. That account
   needs rights to read/disable/delete computer objects in the target OUs.

@@ -4,7 +4,7 @@
 
   <Package Name="Stale Device Manager"
            Manufacturer="ThomasMarcussen.com"
-           Version="1.2.0"
+           Version="1.3.0"
            UpgradeCode="611BB251-4406-4901-8263-21C5EABB6EC6"
            Scope="perMachine"
            Compressed="yes">

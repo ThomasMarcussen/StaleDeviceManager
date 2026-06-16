@@ -38,6 +38,12 @@ public class StaleDevice : INotifyPropertyChanged
 
     public string OperatingSystem { get; init; } = "";
 
+    /// <summary>
+    /// Last/primary user where the platform exposes it: Intune userPrincipalName,
+    /// Entra registered owner. Blank for AD (computer objects don't store this).
+    /// </summary>
+    public string LastUser { get; init; } = "";
+
     /// <summary>Last meaningful activity: lastLogonTimestamp (AD) or approximateLastSignInDateTime (Entra).</summary>
     public DateTime? LastActivity { get; init; }
 
