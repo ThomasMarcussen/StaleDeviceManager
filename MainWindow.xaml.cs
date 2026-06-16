@@ -25,7 +25,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         _view = CollectionViewSource.GetDefaultView(_devices);
-        _view.Filter = o => _osFilter == AllOs || ((StaleDevice)o).OperatingSystem == _osFilter;
+        _view.Filter = o => _osFilter == AllOs || ((StaleDevice)o).OsFamily == _osFilter;
         Grid.ItemsSource = _view;
         OsFilter.Items.Add(AllOs);
         OsFilter.SelectedIndex = 0;
@@ -166,7 +166,7 @@ public partial class MainWindow : Window
         var current = _osFilter;
         OsFilter.Items.Clear();
         OsFilter.Items.Add(AllOs);
-        foreach (var os in _devices.Select(d => d.OperatingSystem)
+        foreach (var os in _devices.Select(d => d.OsFamily)
                                    .Where(s => !string.IsNullOrWhiteSpace(s))
                                    .Distinct().OrderBy(s => s))
             OsFilter.Items.Add(os);

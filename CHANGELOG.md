@@ -4,6 +4,23 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-06-16
+
+### Added
+- **OS-family filter** - the OS dropdown now groups results by family
+  ("Windows 10", "Windows 11", "Windows Server 2019", ...) instead of listing
+  every edition and build separately, so selecting "Windows 10" matches all
+  Windows 10 devices regardless of edition or minor build. The build number is
+  parsed so version-style strings reported as `10.0.22xxx` are correctly filed
+  as Windows 11. The grid still shows the exact OS string per device.
+
+### Fixed
+- **Entra/Intune sign-in no longer freezes the app** when the login window is
+  closed or abandoned without authenticating. The interactive prompt is now
+  bounded by a timeout and cancels cleanly, and the connection is only committed
+  once sign-in actually succeeds (previously a failed sign-in could leave the
+  app reporting itself as connected).
+
 ## [1.3.0] - 2026-06-16
 
 ### Added

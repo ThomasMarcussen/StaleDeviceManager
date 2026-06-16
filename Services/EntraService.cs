@@ -1,3 +1,4 @@
+using Azure.Core;
 using Azure.Identity;
 using StaleDeviceManager.Models;
 using Microsoft.Graph;
@@ -33,7 +34,8 @@ public class EntraService
     /// No token cache is persisted, so each connect is an explicit sign-in - this
     /// lets you authenticate as an account other than the logged-on Windows user.
     /// </summary>
-    public async Task ConnectAsync(Action<string> log, string? loginHint = null)
+    public async Task ConnectAsync(Action<string> log, string? loginHint = null,
+        CancellationToken cancellationToken = default)
     {
         var options = new InteractiveBrowserCredentialOptions
         {
@@ -44,12 +46,34 @@ public class EntraService
             options.LoginHint = loginHint.Trim();
 
         var credential = new InteractiveBrowserCredential(options);
-        _graph = new GraphServiceClient(credential, Scopes);
 
-        // Force a token acquisition + identify the signed-in user.
-        var me = await _graph.Me.GetAsync(rc =>
-            rc.QueryParameters.Select = new[] { "userPrincipalName", "displayName" });
+        // Force the interactive prompt up front, bounded by a timeout. If the user
+        // closes the sign-in window without authenticating, MSAL's localhost listener
+        // would otherwise wait indefinitely for a redirect that never arrives - the
+        // app appears frozen. The cancellation token lets it fail cleanly instead.
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        cts.CancelAfter(TimeSpan.FromMinutes(3));
+
+        try
+        {
+            await credential.GetTokenAsync(new TokenRequestContext(Scopes), cts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            // Don't leave a half-built client around: IsConnected must stay false.
+            throw new InvalidOperationException(
+                "Sign-in was cancelled - the login window was closed or it timed out before completing. Not connected to Entra ID.");
+        }
+
+        // Token is cached on the credential now; build the client and reuse it.
+        var graph = new GraphServiceClient(credential, Scopes);
+        var me = await graph.Me.GetAsync(rc =>
+            rc.QueryParameters.Select = new[] { "userPrincipalName", "displayName" },
+            cancellationToken);
         SignedInUser = me?.UserPrincipalName ?? me?.DisplayName ?? "(unknown)";
+
+        // Only commit the connection once we know it actually works.
+        _graph = graph;
         log($"Entra: connected as {SignedInUser}.");
     }
 
