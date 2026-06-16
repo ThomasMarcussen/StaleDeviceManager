@@ -33,6 +33,20 @@ public partial class MainWindow : Window
     private int InactiveDays =>
         int.TryParse(DaysBox.Text, out var d) && d > 0 ? d : 90;
 
+    /// <summary>
+    /// Pushes the current AD credential fields onto the AD service. Blank user =
+    /// fall back to the current Windows user. Called before every AD operation so
+    /// edits to the fields take effect without re-scanning.
+    /// </summary>
+    private void ApplyAdCredentials()
+    {
+        var user = AdUser.Text?.Trim();
+        var server = AdServer.Text?.Trim();
+        _ad.Credentials = string.IsNullOrWhiteSpace(user) && string.IsNullOrWhiteSpace(server)
+            ? null
+            : new AdCredentials(server, user, AdPass.Password);
+    }
+
     private void SetBusy(bool busy)
     {
         BtnScan.IsEnabled = !busy;
@@ -49,7 +63,7 @@ public partial class MainWindow : Window
         {
             SetBusy(true);
             Log("Entra: opening sign-in…");
-            await _entra.ConnectAsync(Log);
+            await _entra.ConnectAsync(Log, EntraUpn.Text);
             EntraStatus.Text = $"Entra: {_entra.SignedInUser}";
             EntraStatus.Foreground = System.Windows.Media.Brushes.Green;
         }
@@ -99,6 +113,7 @@ public partial class MainWindow : Window
 
             if (doAd)
             {
+                ApplyAdCredentials();
                 var adResults = await Task.Run(() => _ad.Scan(days, excludeServers, null, Log));
                 foreach (var d in adResults) _devices.Add(d);
             }
@@ -131,7 +146,7 @@ public partial class MainWindow : Window
         try
         {
             Log("Entra: opening sign-in…");
-            await _entra.ConnectAsync(Log);
+            await _entra.ConnectAsync(Log, EntraUpn.Text);
             EntraStatus.Text = $"Entra: {_entra.SignedInUser}";
             EntraStatus.Foreground = System.Windows.Media.Brushes.Green;
         }
@@ -188,6 +203,7 @@ public partial class MainWindow : Window
         try
         {
             SetBusy(true);
+            ApplyAdCredentials();
             int ok = 0, fail = 0;
             foreach (var d in targets)
             {
@@ -240,6 +256,7 @@ public partial class MainWindow : Window
         try
         {
             SetBusy(true);
+            ApplyAdCredentials();
             int ok = 0, fail = 0;
             foreach (var d in targets)
             {

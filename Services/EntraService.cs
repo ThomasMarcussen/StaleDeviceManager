@@ -27,18 +27,22 @@ public class EntraService
     public bool IsConnected => _graph != null;
     public string? SignedInUser { get; private set; }
 
-    /// <summary>Interactive browser sign-in. Throws on failure.</summary>
-    public async Task ConnectAsync(Action<string> log)
+    /// <summary>
+    /// Interactive browser sign-in. Throws on failure. Pass <paramref name="loginHint"/>
+    /// (a UPN) to pre-target the alternate admin account in the browser prompt.
+    /// No token cache is persisted, so each connect is an explicit sign-in - this
+    /// lets you authenticate as an account other than the logged-on Windows user.
+    /// </summary>
+    public async Task ConnectAsync(Action<string> log, string? loginHint = null)
     {
         var options = new InteractiveBrowserCredentialOptions
         {
             ClientId = GraphCliClientId,
-            RedirectUri = new Uri("http://localhost"),
-            TokenCachePersistenceOptions = new TokenCachePersistenceOptions
-            {
-                Name = "StaleDeviceManager"
-            }
+            RedirectUri = new Uri("http://localhost")
         };
+        if (!string.IsNullOrWhiteSpace(loginHint))
+            options.LoginHint = loginHint.Trim();
+
         var credential = new InteractiveBrowserCredential(options);
         _graph = new GraphServiceClient(credential, Scopes);
 

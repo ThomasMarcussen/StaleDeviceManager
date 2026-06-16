@@ -4,12 +4,42 @@ using StaleDeviceManager.Models;
 namespace StaleDeviceManager.Services;
 
 /// <summary>
+/// Optional alternate credentials / target for AD. When Username is blank the
+/// current Windows user of the running process is used (default behaviour).
+/// Server is an optional domain or domain-controller name (e.g. "corp.local"
+/// or "dc01.corp.local") - useful when the alternate account is in another domain.
+/// </summary>
+public sealed record AdCredentials(string? Server, string? Username, string? Password)
+{
+    public bool HasUser => !string.IsNullOrWhiteSpace(Username);
+}
+
+/// <summary>
 /// On-premises Active Directory operations via System.DirectoryServices.
-/// Uses the current Windows credentials of the running user.
+/// Uses the current Windows credentials of the running user unless
+/// <see cref="Credentials"/> is set with an alternate account.
 /// </summary>
 public class ActiveDirectoryService
 {
     private const int UF_ACCOUNTDISABLE = 0x2;
+
+    /// <summary>Optional alternate credentials / target. Null = current Windows user.</summary>
+    public AdCredentials? Credentials { get; set; }
+
+    /// <summary>
+    /// Builds a DirectoryEntry for a RootDSE bind or a distinguishedName, applying
+    /// the optional server prefix and alternate credentials when present.
+    /// </summary>
+    private DirectoryEntry MakeEntry(string pathSuffix)
+    {
+        var server = Credentials?.Server;
+        var prefix = string.IsNullOrWhiteSpace(server) ? "LDAP://" : $"LDAP://{server}/";
+        var path = prefix + pathSuffix;
+
+        if (Credentials is { HasUser: true })
+            return new DirectoryEntry(path, Credentials.Username, Credentials.Password, AuthenticationTypes.Secure);
+        return new DirectoryEntry(path);
+    }
 
     /// <summary>
     /// Scans computer accounts and returns those that are stale: machine-account
@@ -21,21 +51,21 @@ public class ActiveDirectoryService
         var cutoff = DateTime.UtcNow.AddDays(-inactiveDays);
         var results = new List<StaleDevice>();
 
-        string rootPath;
+        string baseDn;
         if (!string.IsNullOrWhiteSpace(searchBase))
         {
-            rootPath = "LDAP://" + searchBase;
+            baseDn = searchBase;
         }
         else
         {
-            using var rootDse = new DirectoryEntry("LDAP://RootDSE");
-            var defaultNc = rootDse.Properties["defaultNamingContext"].Value?.ToString();
-            rootPath = "LDAP://" + defaultNc;
+            using var rootDse = MakeEntry("RootDSE");
+            baseDn = rootDse.Properties["defaultNamingContext"].Value?.ToString() ?? "";
         }
 
-        log($"AD: searching {rootPath} (cutoff {cutoff:yyyy-MM-dd})");
+        var who = Credentials is { HasUser: true } ? Credentials.Username : "current Windows user";
+        log($"AD: searching {baseDn} as {who} (cutoff {cutoff:yyyy-MM-dd})");
 
-        using var root = new DirectoryEntry(rootPath);
+        using var root = MakeEntry(baseDn);
         using var searcher = new DirectorySearcher(root)
         {
             Filter = "(objectCategory=computer)",
@@ -99,7 +129,7 @@ public class ActiveDirectoryService
     public void Disable(StaleDevice device)
     {
         GuardDn(device);
-        using var de = new DirectoryEntry("LDAP://" + device.Id);
+        using var de = MakeEntry(device.Id);
         int uac = (int)(de.Properties["userAccountControl"].Value ?? 0);
         de.Properties["userAccountControl"].Value = uac | UF_ACCOUNTDISABLE;
         de.Properties["description"].Value =
@@ -112,7 +142,7 @@ public class ActiveDirectoryService
     public void Delete(StaleDevice device)
     {
         GuardDn(device);
-        using var de = new DirectoryEntry("LDAP://" + device.Id);
+        using var de = MakeEntry(device.Id);
 
         // Final safety: never act on anything that is not a computer object.
         var classes = de.Properties["objectClass"];

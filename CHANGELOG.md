@@ -4,6 +4,21 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-06-16
+
+### Added
+- **Alternate credentials.** Optional credentials panel so cleanup can run under
+  an account other than the logged-on Windows user:
+  - On-prem AD: username, password, and an optional domain/DC (supports a
+    different domain). Blank = current Windows user.
+  - Entra ID / Intune: a "Sign in as (UPN)" hint that pre-targets the admin
+    account in the interactive browser sign-in (MFA completed in the browser).
+
+### Changed
+- The Entra/Intune sign-in no longer persists a token cache, so each connect is
+  an explicit sign-in - you can authenticate as an account other than the
+  logged-on user.
+
 ## [1.1.0] - 2026-06-16
 
 ### Added

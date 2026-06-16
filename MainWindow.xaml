@@ -54,6 +54,34 @@
             </Grid>
         </Border>
 
+        <!-- Credentials (optional) -->
+        <Expander DockPanel.Dock="Top" Header="Credentials (optional - leave blank to use the signed-in Windows user)"
+                  IsExpanded="False" Margin="0,0,0,10">
+            <Border BorderBrush="#DDD" BorderThickness="1" CornerRadius="6" Padding="12" Margin="0,6,0,0">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBlock Text="On-prem AD" Width="86" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                        <TextBlock Text="User:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                        <TextBox x:Name="AdUser" Width="180" Margin="0,0,12,0" VerticalContentAlignment="Center"
+                                 ToolTip="DOMAIN\user or user@domain. Leave blank to use the current Windows user."/>
+                        <TextBlock Text="Password:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                        <PasswordBox x:Name="AdPass" Width="150" Margin="0,0,12,0" VerticalContentAlignment="Center"/>
+                        <TextBlock Text="Domain/DC:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                        <TextBox x:Name="AdServer" Width="170" VerticalContentAlignment="Center"
+                                 ToolTip="Optional. e.g. corp.local or dc01.corp.local. Leave blank for the current domain."/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Entra / Intune" Width="86" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                        <TextBlock Text="Sign in as:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                        <TextBox x:Name="EntraUpn" Width="240" Margin="0,0,12,0" VerticalContentAlignment="Center"
+                                 ToolTip="UPN of the admin account to sign in as, e.g. cleanup-admin@contoso.com"/>
+                        <TextBlock Text="(you complete sign-in, including MFA, in the browser)"
+                                   Foreground="#777" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Expander>
+
         <!-- Action bar + log (bottom) -->
         <Border DockPanel.Dock="Bottom" BorderBrush="#DDD" BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,10,0,0">
             <Grid>

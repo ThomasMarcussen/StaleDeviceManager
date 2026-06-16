@@ -53,6 +53,17 @@ threshold - devices with unknown creation/enrolment dates are never flagged.
   e.g. Cloud Device Administrator + Intune Administrator, or Global Administrator.
   Consent is requested on first sign-in.
 
+### Alternate credentials
+Cleanup is often run under a dedicated admin account that differs from the
+logged-on user. Expand the **Credentials (optional)** panel to provide them:
+
+- **On-prem AD** - username (`DOMAIN\user` or `user@domain`), password, and an
+  optional **Domain/DC** (e.g. `corp.local` or `dc01.corp.local`) when the
+  account belongs to a different domain. Leave blank to use the current Windows user.
+- **Entra ID / Intune** - a **Sign in as (UPN)** hint that pre-fills the target
+  admin account in the browser sign-in. You still complete authentication
+  (including MFA) in the browser, so any account type is supported.
+
 ## Download
 Grab the latest self-contained `StaleDeviceManager.exe` from the
 [Releases](../../releases) page. No .NET runtime needed on the target machine -
